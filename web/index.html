@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>پلنر هوشمند</title>
+<link rel="stylesheet" href="assets/fonts/vazirmatn.css"><link rel="stylesheet" href="assets/fa/css/all.min.css">
+<script src="assets/jalali.js"></script><script src="assets/native.js"></script>
+<style>
+:root{--bg:#f0f2f5;--card:rgba(255,255,255,.75);--text:#1a1a2e;--sub:#6b6b85;--p:#6c5ce7;--g:#00b894;--r:#ff7675;--y:#fdcb6e;--grad:linear-gradient(135deg,#6c5ce7,#00b894);--sh:0 8px 32px rgba(0,0,0,.08);--glow:0 6px 24px rgba(108,92,231,.45)}
+body.dark{--bg:#0f0f1a;--card:rgba(30,30,50,.75);--text:#eee;--sub:#a0a0c0;--sh:0 8px 32px rgba(0,0,0,.4)}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Vazirmatn,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 15% 0,rgba(108,92,231,.25),transparent 45%),radial-gradient(circle at 90% 100%,rgba(0,184,148,.2),transparent 45%)}
+.top{padding:calc(14px + env(safe-area-inset-top)) 16px 0}
+.hero{background:var(--grad);color:#fff;border-radius:28px;padding:18px;box-shadow:var(--glow);display:flex;align-items:center;gap:14px}
+.hero h1{font-size:20px;font-weight:900}.hero p{font-size:13px;opacity:.9;margin-top:4px}
+.ring{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;flex:none;background:conic-gradient(#fff calc(var(--v)*1%),rgba(255,255,255,.25) 0)}
+.ring b{width:58px;height:58px;border-radius:50%;background:#5b52d6;display:grid;place-items:center;font-size:15px}
+.hb{display:flex;gap:8px;margin-top:10px;justify-content:flex-end}
+.ib{width:42px;height:42px;border-radius:14px;border:0;background:var(--card);color:var(--p);font-size:16px;box-shadow:var(--sh);backdrop-filter:blur(14px)}
+main{padding:14px 16px}
+h2{font-size:15px;margin:16px 4px 8px;display:flex;justify-content:space-between}h2 small{color:var(--sub);font-weight:400}
+.card{background:var(--card);backdrop-filter:blur(14px);border-radius:20px;box-shadow:var(--sh);border:1px solid rgba(255,255,255,.25)}
+.t{display:flex;align-items:center;gap:12px;padding:13px;margin-bottom:10px}
+.t.done .tt{text-decoration:line-through;opacity:.5}
+.ck{width:28px;height:28px;border-radius:50%;border:2px solid var(--p);flex:none;display:grid;place-items:center;color:#fff;font-size:13px;background:transparent}
+.done .ck{background:var(--g);border-color:var(--g)}
+.tb{flex:1;min-width:0}.tt{font-weight:700;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m{font-size:12px;color:var(--sub);margin-top:3px;display:flex;gap:8px;align-items:center}
+.d{width:9px;height:9px;border-radius:50%;display:inline-block}.high{background:var(--r)}.medium{background:var(--y)}.low{background:var(--g)}
+.late{color:var(--r)!important;font-weight:700}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px}.chip{padding:8px 15px;border-radius:30px;border:0;background:var(--card);color:var(--text);font:inherit;font-size:13px;white-space:nowrap;box-shadow:var(--sh)}
+.chip.on{background:var(--grad);color:#fff;box-shadow:var(--glow)}
+input,textarea,select{width:100%;padding:13px;border-radius:14px;border:1px solid rgba(108,92,231,.18);background:var(--card);color:var(--text);font:inherit;font-size:16px;margin-bottom:10px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;padding:12px;text-align:center}
+.cal .h{font-size:12px;color:var(--sub);padding:4px}.cal .c{aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:14px;position:relative}
+.c.fri{color:var(--r)}.c.td{box-shadow:inset 0 0 0 2px var(--p)}.c.sel{background:var(--grad);color:#fff;box-shadow:var(--glow)}
+.c i{position:absolute;bottom:5px;width:5px;height:5px;border-radius:50%;background:var(--g)}.c.ev i{background:var(--y)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:6px 4px}
+.bar{height:10px;border-radius:9px;background:rgba(108,92,231,.15);overflow:hidden;margin:6px 0 12px}.bar>div{height:100%;background:var(--grad);border-radius:9px}
+nav{position:fixed;bottom:0;inset-inline:0;display:flex;justify-content:space-around;align-items:center;padding:8px 6px calc(8px + env(safe-area-inset-bottom));background:var(--card);backdrop-filter:blur(22px);box-shadow:0 -6px 28px rgba(0,0,0,.1);border-radius:26px 26px 0 0}
+nav button{background:none;border:0;color:var(--sub);font:inherit;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px;width:64px}nav button i{font-size:19px}nav button.on{color:var(--p);font-weight:700}
+.fab{width:58px!important;height:58px;border-radius:20px!important;background:var(--grad)!important;color:#fff!important;box-shadow:var(--glow);margin-top:-30px;justify-content:center}.fab i{font-size:22px!important}
+.sh{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;z-index:9}.sh.open{display:flex}
+.sheet{width:100%;max-height:92vh;overflow:auto;background:var(--bg);border-radius:28px 28px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom))}
+.sheet:before{content:"";display:block;width:44px;height:5px;border-radius:5px;background:rgba(128,128,150,.4);margin:0 auto 14px}
+.seg{display:flex;gap:6px;margin-bottom:10px}.seg button{flex:1;padding:11px 4px;border-radius:14px;border:0;background:var(--card);color:var(--text);font:inherit;font-size:13px}.seg button.on{background:var(--grad);color:#fff}
+.jp{display:flex;gap:6px}.btn{width:100%;padding:15px;border-radius:16px;border:0;background:var(--grad);color:#fff;font:inherit;font-weight:700;font-size:16px;box-shadow:var(--glow);margin-top:6px}.btn.x{background:none;color:var(--r);box-shadow:none}
+.toast{position:fixed;bottom:calc(100px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:11px 18px;border-radius:30px;font-size:13px;z-index:20;display:none}
+.empty{text-align:center;color:var(--sub);padding:26px;font-size:14px}
+</style></head><body>
+<div class="top"><div class="hero"><div style="flex:1"><h1 id="hT">پلنر هوشمند</h1><p id="hS"></p></div><div class="ring" id="ring"><b id="rT"></b></div></div>
+<div class="hb"><button class="ib" onclick="calSync()"><i class="fas fa-calendar-check"></i></button><button class="ib" onclick="backup()"><i class="fas fa-share-nodes"></i></button><button class="ib" onclick="theme()"><i class="fas fa-moon"></i></button></div></div>
+<main id="v"></main>
+<nav><button data-t="today"><i class="fas fa-house"></i>امروز</button><button data-t="tasks"><i class="fas fa-list-check"></i>تسک‌ها</button><button class="fab" onclick="openSheet()"><i class="fas fa-plus"></i></button><button data-t="cal"><i class="fas fa-calendar-days"></i>تقویم</button><button data-t="stats"><i class="fas fa-chart-pie"></i>آمار</button></nav>
+<div class="sh" id="sh" onclick="if(event.target===this)closeSheet()"><div class="sheet">
+<input id="fT" placeholder="عنوان تسک"><textarea id="fD" rows="2" placeholder="توضیحات (اختیاری)"></textarea>
+<div class="seg" id="sP"></div><div class="seg" id="sS"></div>
+<div class="seg" id="sQ"><button onclick="qd(0)">امروز</button><button onclick="qd(1)">فردا</button><button onclick="qd(7)">هفته بعد</button></div>
+<div class="jp"><select id="jY"></select><select id="jM"></select><select id="jD"></select></div>
+<button class="btn" onclick="saveTask()">ذخیره</button><button class="btn x" id="del" onclick="delTask()">حذف تسک</button></div></div>
+<div class="toast" id="ts"></div>
+<script>
+const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()&&window.Native);
+let tasks=JSON.parse(localStorage.getItem('proPlannerTasks')||'[]'),tab='today',flt='all',q='',editId=null,P='medium',S='todo',sel=isoDate(new Date()),calJ=JAL.todayJ(),ev={},evKey=new Set(),rt;
+const $=id=>document.getElementById(id),ST={todo:'در انتظار',progress:'در حال انجام',done:'انجام‌شده'},PR={high:'زیاد',medium:'متوسط',low:'کم'};
+const today=()=>isoDate(new Date()),addD=n=>{const d=new Date();d.setDate(d.getDate()+n);return isoDate(d)};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m){const t=$('ts');t.textContent=m;t.style.display='block';clearTimeout(t.h);t.h=setTimeout(()=>t.style.display='none',2200)}
+function save(){localStorage.setItem('proPlannerTasks',JSON.stringify(tasks));if(NATIVE){clearTimeout(rt);rt=setTimeout(()=>Native.scheduleReminders(tasks).catch(()=>{}),1500)}render()}
+function rel(d){const t=today();return d===t?'امروز':d===addD(1)?'فردا':d===addD(-1)?'دیروز':fmtJ(d)}
+function card(t){const late=t.status!=='done'&&t.date<today();return`<div class="card t ${t.status==='done'?'done':''}"><button class="ck" onclick="tog('${t.id}')">${t.status==='done'?'<i class="fas fa-check"></i>':''}</button><div class="tb" onclick="openSheet('${t.id}')"><div class="tt">${esc(t.title)}</div><div class="m"><span class="d ${t.priority}"></span><span>${PR[t.priority]||''}</span><span class="${late?'late':''}">${late?'⚠ ':''}${rel(t.date)}</span>${t.status==='progress'?'<span>• در حال انجام</span>':''}</div></div></div>`}
+const list=a=>a.length?a.map(card).join(''):'<div class="empty">موردی نیست 🌿</div>';
+function render(){
+ const t0=today(),act=tasks.filter(t=>t.status!=='done'),td=tasks.filter(t=>t.date===t0),dn=td.filter(t=>t.status==='done').length,pc=td.length?Math.round(dn/td.length*100):0;
+ $('hS').textContent=fmtJ(t0,true);$('hT').textContent=td.length?`${toFa(td.length-dn)} تسک برای امروز`:'امروز آزادی 🎉';$('ring').style.setProperty('--v',pc);$('rT').textContent=toFa(pc)+'٪';
+ document.querySelectorAll('nav [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));let h='';
+ if(tab==='today'){const late=act.filter(t=>t.date<t0),soon=act.filter(t=>t.date>t0&&t.date<=addD(7)).sort((a,b)=>a.date.localeCompare(b.date));
+  h=(late.length?`<h2>⚠️ عقب‌افتاده<small>${toFa(late.length)}</small></h2>${list(late)}`:'')+`<h2>📌 امروز<small>${toFa(td.length)}</small></h2>${list(td)}<h2>🗓️ ۷ روز آینده</h2>${list(soon)}`}
+ else if(tab==='tasks'){const f=tasks.filter(t=>(flt==='all'||t.status===flt)&&(!q||(t.title+t.desc).includes(q))).sort((a,b)=>a.date.localeCompare(b.date));
+  h=`<input placeholder="🔍 جستجو..." value="${esc(q)}" oninput="q=this.value;render2()"><div class="chips">${[['all','همه'],...Object.entries(ST)].map(([k,v])=>`<button class="chip ${flt===k?'on':''}" onclick="flt='${k}';render()">${v}</button>`).join('')}</div><div id="tl">${list(f)}</div>`}
+ else if(tab==='cal')h=calHtml();
+ else{const n=tasks.length||1,c=k=>tasks.filter(t=>t.status===k).length;h=`<div class="card" style="padding:16px"><h2 style="margin-top:0">وضعیت‌ها</h2>${Object.entries(ST).map(([k,v])=>`<div class="row"><span>${v}</span><b>${toFa(c(k))}</b></div><div class="bar"><div style="width:${c(k)/n*100}%"></div></div>`).join('')}<h2>اولویت‌ها</h2>${Object.entries(PR).map(([k,v])=>`<div class="row"><span><span class="d ${k}"></span> ${v}</span><b>${toFa(tasks.filter(t=>t.priority===k).length)}</b></div>`).join('')}<div class="row"><span>⚠️ عقب‌افتاده</span><b class="late">${toFa(act.filter(t=>t.date<t0).length)}</b></div></div>`}
+ $('v').innerHTML=h}
+function render2(){const f=tasks.filter(t=>(flt==='all'||t.status===flt)&&(!q||(t.title+t.desc).includes(q))).sort((a,b)=>a.date.localeCompare(b.date));$('tl').innerHTML=list(f)}
+function calHtml(){const{jy,jm}=calJ,len=JAL.monthLength(jy,jm),g=JAL.toGregorian(jy,jm,1),fc=(new Date(g.gy,g.gm-1,g.gd).getDay()+1)%7;let c='';['ش','ی','د','س','چ','پ','ج'].forEach(x=>c+=`<div class="h">${x}</div>`);for(let i=0;i<fc;i++)c+='<div></div>';
+ for(let d=1;d<=len;d++){const iso=jToISO(jy,jm,d),has=tasks.some(t=>t.date===iso&&t.status!=='done');c+=`<div class="c ${(fc+d-1)%7===6?'fri':''} ${iso===today()?'td':''} ${iso===sel?'sel':''} ${ev[iso]?'ev':''}" onclick="sel='${iso}';render()">${toFa(d)}${has||ev[iso]?'<i></i>':''}</div>`}
+ const day=tasks.filter(t=>t.date===sel);loadEv();return`<div class="row"><button class="ib" onclick="mv(-1)"><i class="fas fa-chevron-right"></i></button><b>${JAL.MONTHS[jm-1]} ${toFa(jy)}</b><button class="ib" onclick="mv(1)"><i class="fas fa-chevron-left"></i></button></div><div class="card cal">${c}</div><h2>${fmtJ(sel,true)}<small onclick="openSheet(null,'${sel}')" style="color:var(--p)">+ افزودن</small></h2>${(ev[sel]||[]).map(e=>`<div class="card t"><span>📅</span><div class="tb"><div class="tt">${esc(e.title)}</div><div class="m">${e.allDay?'تمام‌روز':toFa(e.time)}</div></div></div>`).join('')}${list(day)}`}
+function mv(n){let m=calJ.jm+n,y=calJ.jy;if(m>12){m=1;y++}if(m<1){m=12;y--}calJ={jy:y,jm:m};render()}
+async function loadEv(){if(!NATIVE)return;const a=jToISO(calJ.jy,calJ.jm,1),b=jToISO(calJ.jy,calJ.jm,JAL.monthLength(calJ.jy,calJ.jm));if(evKey.has(a))return;evKey.add(a);try{const r=await Native.listEvents(a,b);if(r.ok&&r.events.length){r.events.forEach(e=>{const l=ev[e.date]=ev[e.date]||[];if(!l.some(x=>x.title===e.title&&x.time===e.time))l.push(e)});render()}else if(!r.ok)evKey.delete(a)}catch(e){evKey.delete(a)}}
+function tog(id){const t=tasks.find(x=>x.id===id);t.status=t.status==='done'?'todo':'done';save()}
+function seg(id,o,cur,fn){$(id).innerHTML=Object.entries(o).map(([k,v])=>`<button class="${k===cur?'on':''}" onclick="${fn}('${k}')">${v}</button>`).join('')}
+function sp(v){P=v;seg('sP',PR,P,'sp')}function ss(v){S=v;seg('sS',ST,S,'ss')}
+function pick(iso){const p=parseISO(iso),j=JAL.toJalali(p.y,p.m,p.d),y=$('jY');y.innerHTML='';for(let i=j.jy-1;i<=j.jy+6;i++)y.innerHTML+=`<option value="${i}">${toFa(i)}</option>`;$('jM').innerHTML=JAL.MONTHS.map((n,i)=>`<option value="${i+1}">${n}</option>`).join('');y.value=j.jy;$('jM').value=j.jm;days(j.jd)}
+function days(k){const n=JAL.monthLength(+$('jY').value,+$('jM').value),s=Math.min(k||+$('jD').value||1,n);$('jD').innerHTML=Array.from({length:n},(_,i)=>`<option value="${i+1}">${toFa(i+1)}</option>`).join('');$('jD').value=s}
+$('jY').onchange=$('jM').onchange=()=>days();
+const pd=()=>jToISO(+$('jY').value,+$('jM').value,+$('jD').value);function qd(n){pick(addD(n))}
+function openSheet(id,date){editId=id||null;const t=tasks.find(x=>x.id===id);$('fT').value=t?t.title:'';$('fD').value=t?t.desc:'';sp(t?t.priority:'medium');ss(t?t.status:'todo');pick(t?t.date:(date||today()));$('del').style.display=t?'block':'none';$('sh').classList.add('open')}
+function closeSheet(){$('sh').classList.remove('open')}
+function saveTask(){const title=$('fT').value.trim();if(!title){toast('⚠️ عنوان را وارد کنید');return}const o={title,desc:$('fD').value.trim(),priority:P,status:S,date:pd()};
+ if(editId)Object.assign(tasks.find(x=>x.id===editId),o);else tasks.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),createdAt:new Date().toISOString(),...o});closeSheet();save();toast('✅ ذخیره شد')}
+function delTask(){if(!confirm('این تسک حذف شود؟'))return;tasks=tasks.filter(x=>x.id!==editId);closeSheet();save();toast('🗑️ حذف شد')}
+function theme(){document.body.classList.toggle('dark');localStorage.setItem('proTheme',document.body.classList.contains('dark')?'dark':'light');NATIVE&&Native.setDarkUi(document.body.classList.contains('dark'))}
+async function calSync(){if(!NATIVE){toast('فقط در برنامه‌ی اندروید');return}toast('⏳ همگام‌سازی...');const r=await Native.syncCalendar(tasks);if(r.ok){toast(`✅ ${toFa(r.created)} جدید، ${toFa(r.updated)} به‌روز، ${toFa(r.deleted)} حذف`);ev={};evKey.clear();render()}else alert('❌ '+r.error)}
+function backup(){if(!tasks.length){toast('تسکی نیست');return}const s=JSON.stringify(tasks,null,2);NATIVE?Native.exportFile(s,'planner-backup.json','application/json'):toast('فقط در برنامه‌ی اندروید')}
+document.querySelectorAll('nav [data-t]').forEach(b=>b.onclick=()=>{tab=b.dataset.t;render();scrollTo(0,0)});
+function back(){if($('sh').classList.contains('open'))return closeSheet();if(tab!=='today'){tab='today';return render()}Native.exitApp()}
+if(localStorage.getItem('proTheme')==='dark')document.body.classList.add('dark');render();
+if(NATIVE)(async()=>{try{await Native.init({onBack:back});Native.setDarkUi(document.body.classList.contains('dark'));await Native.scheduleReminders(tasks)}catch(e){}})();
+</script></body></html>

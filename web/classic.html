@@ -1,0 +1,2024 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#6c5ce7" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <title>پلنر هوشمند پیشرفته</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="assets/fonts/vazirmatn.css" />
+    <link rel="stylesheet" href="assets/fa/css/all.min.css" />
+    
+    <!-- Chart.js -->
+    <script src="assets/chart.umd.js"></script>
+    <script src="assets/jalali.js"></script>
+    <script src="assets/native.js"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js">
+    </script>
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f0f2f5;
+            --bg-card: rgba(255, 255, 255, 0.7);
+            --text: #1a1a2e;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --border: rgba(255, 255, 255, 0.2);
+            --primary: #6c5ce7;
+            --primary-dark: #5a4bd1;
+            --gradient: linear-gradient(135deg, #6c5ce7, #00b894);
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 15px;
+            transition: all 0.4s;
+        }
+
+        body.dark {
+            --bg: #0f0f1a;
+            --bg-card: rgba(30, 30, 50, 0.7);
+            --text: #e0e0e0;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --border: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: 0.4s;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(108, 92, 231, 0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 900;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 16px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00a381);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #fdcb6e, #f39c12);
+            color: #1a1a2e;
+        }
+        .btn-dark {
+            background: rgba(108, 92, 231, 0.12);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(108, 92, 231, 0.15);
+            color: var(--text);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid rgba(108, 92, 231, 0.3);
+            color: var(--text);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 28px rgba(108, 92, 231, 0.25);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            background: rgba(108, 92, 231, 0.04);
+            padding: 6px;
+            border-radius: 20px;
+            border: 1px solid rgba(108, 92, 231, 0.06);
+        }
+
+        .tab {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            border-radius: 14px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            color: var(--text);
+            opacity: 0.6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab:hover {
+            opacity: 0.8;
+            background: rgba(108, 92, 231, 0.04);
+        }
+
+        .tab.active {
+            opacity: 1;
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 16px rgba(108, 92, 231, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== STATS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(108, 92, 231, 0.04);
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(108, 92, 231, 0.06);
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            background: rgba(108, 92, 231, 0.08);
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 900;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 4px;
+        }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(108, 92, 231, 0.03);
+            border-radius: 20px;
+            align-items: center;
+        }
+
+        .toolbar input,
+        .toolbar select {
+            padding: 10px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(108, 92, 231, 0.12);
+            background: rgba(255, 255, 255, 0.5);
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 14px;
+            transition: 0.3s;
+            min-width: 140px;
+            color: var(--text);
+        }
+
+        body.dark .toolbar input,
+        body.dark .toolbar select {
+            background: rgba(20, 20, 35, 0.5);
+            color: #e0e0e0;
+        }
+
+        .toolbar input:focus,
+        .toolbar select:focus {
+            outline: none;
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+        }
+
+        /* ===== TABLE ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 20px;
+            background: rgba(108, 92, 231, 0.02);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 800px;
+        }
+
+        thead {
+            background: rgba(108, 92, 231, 0.04);
+            border-bottom: 2px solid rgba(108, 92, 231, 0.08);
+        }
+
+        thead th {
+            padding: 16px 14px;
+            text-align: right;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        thead th:hover {
+            opacity: 1;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(108, 92, 231, 0.04);
+            transition: 0.3s;
+        }
+
+        tbody tr:hover {
+            background: rgba(108, 92, 231, 0.03);
+        }
+
+        tbody tr.selected {
+            background: rgba(108, 92, 231, 0.06);
+        }
+
+        tbody td {
+            padding: 14px 14px;
+            vertical-align: middle;
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .badge-high {
+            background: #ff6b6b;
+            color: white;
+        }
+        .badge-medium {
+            background: #feca57;
+            color: #1a1a2e;
+        }
+        .badge-low {
+            background: #48dbfb;
+            color: #1a1a2e;
+        }
+        .badge-todo {
+            background: #a29bfe;
+            color: white;
+        }
+        .badge-progress {
+            background: #fdcb6e;
+            color: #1a1a2e;
+        }
+        .badge-done {
+            background: #00b894;
+            color: white;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            accent-color: #6c5ce7;
+            cursor: pointer;
+        }
+
+        /* ===== CALENDAR ===== */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .calendar-header {
+            text-align: center;
+            font-weight: 700;
+            padding: 12px;
+            background: rgba(108, 92, 231, 0.04);
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            padding: 10px;
+            background: rgba(108, 92, 231, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(108, 92, 231, 0.04);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover {
+            background: rgba(108, 92, 231, 0.06);
+            transform: scale(1.02);
+        }
+
+        .calendar-day.today {
+            border-color: #6c5ce7;
+            background: rgba(108, 92, 231, 0.06);
+        }
+
+        .calendar-day .day-number {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .calendar-day .day-tasks {
+            font-size: 11px;
+            opacity: 0.7;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .calendar-day .day-tasks.has-tasks {
+            opacity: 1;
+            color: #6c5ce7;
+            font-weight: 700;
+        }
+
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-nav button {
+            padding: 8px 20px;
+            border: none;
+            background: rgba(108, 92, 231, 0.08);
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Vazirmatn', sans-serif;
+            font-weight: 700;
+            transition: 0.3s;
+            color: var(--text);
+        }
+
+        .calendar-nav button:hover {
+            background: rgba(108, 92, 231, 0.15);
+        }
+
+        .calendar-nav .month-year {
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        /* ===== CHARTS ===== */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .chart-container {
+            background: rgba(108, 92, 231, 0.02);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(108, 92, 231, 0.04);
+        }
+
+        .chart-container h3 {
+            margin-bottom: 15px;
+            font-size: 16px;
+            opacity: 0.7;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 250px;
+        }
+
+        /* ===== NOTIFICATIONS ===== */
+        .notification-banner {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 20px;
+            z-index: 9999;
+            animation: slideDown 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .notification-banner.show {
+            display: block;
+        }
+
+        .notification-banner .notif-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .notification-banner .notif-body {
+            opacity: 0.7;
+            font-size: 14px;
+        }
+
+        .notification-banner .notif-close {
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* ===== SYNC STATUS ===== */
+        .sync-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 30px;
+            background: rgba(108, 92, 231, 0.08);
+        }
+
+        .sync-status .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00b894;
+        }
+
+        .sync-status .sync-dot.syncing {
+            animation: pulse 1s infinite;
+            background: #fdcb6e;
+        }
+
+        .sync-status .sync-dot.error {
+            background: #ff6b6b;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ===== PAGINATION ===== */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 15px 0;
+            border-top: 1px solid rgba(108, 92, 231, 0.06);
+            margin-top: 15px;
+        }
+
+        .pagination-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-buttons button {
+            padding: 8px 14px;
+            border: 1px solid rgba(108, 92, 231, 0.1);
+            background: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Vazirmatn', sans-serif;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .pagination-buttons button:hover:not(:disabled) {
+            background: rgba(108, 92, 231, 0.08);
+        }
+
+        .pagination-buttons button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .pagination-buttons button.active {
+            background: var(--gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .stat-number {
+                font-size: 22px;
+            }
+            .toolbar {
+                flex-direction: column;
+            }
+            .toolbar input,
+            .toolbar select {
+                width: 100%;
+                min-width: auto;
+            }
+            .tabs .tab {
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+            .calendar-grid {
+                gap: 4px;
+            }
+            .calendar-day {
+                min-height: 70px;
+                padding: 6px;
+                font-size: 12px;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .btn {
+                padding: 6px 14px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calendar-day {
+                min-height: 60px;
+                padding: 4px;
+                font-size: 11px;
+            }
+            .calendar-day .day-number {
+                font-size: 13px;
+            }
+            .calendar-header {
+                font-size: 11px;
+                padding: 6px;
+            }
+        }
+
+        /* ===== ANDROID ===== */
+        html { -webkit-text-size-adjust: 100%; }
+        body {
+            -webkit-tap-highlight-color: transparent;
+            padding-top: calc(15px + env(safe-area-inset-top, 0px));
+            padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px));
+            padding-left: calc(15px + env(safe-area-inset-left, 0px));
+            padding-right: calc(15px + env(safe-area-inset-right, 0px));
+            overscroll-behavior-y: contain;
+        }
+        .notification-banner { top: calc(12px + env(safe-area-inset-top, 0px)) !important; }
+        .toast { bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important; }
+        @media (hover: none) {
+            .btn:hover, .calendar-day:hover, .stat-card:hover, .task-card:hover { transform: none !important; }
+        }
+        input, select, textarea, button { font-size: 16px; }
+        .btn, .tab { min-height: 40px; }
+        .table-wrapper table { min-width: 680px; }
+
+        /* ===== NATIVE / JALALI ADDITIONS ===== */
+        .native-only { display: none !important; }
+        body.native .native-only { display: inline-flex !important; }
+        .calendar-day.friday .day-number { color: #e74c3c; }
+        .calendar-day .outlook-evt {
+            display: block; font-size: 11px; margin-top: 3px; color: #00a381; font-weight: 700;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .jp-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .jp-row select {
+            flex: 1; padding: 12px; border-radius: 14px; border: 1px solid rgba(108,92,231,0.12);
+            background: rgba(255,255,255,0.5); font-family: 'Vazirmatn', sans-serif; color: var(--text);
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(108, 92, 231, 0.04);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient);
+            border-radius: 10px;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 700;
+            z-index: 9999;
+            animation: slideUp 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            max-width: 90%;
+            text-align: center;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateX(-50%) translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NOTIFICATION BANNER ===== -->
+    <div class="notification-banner" id="notificationBanner">
+        <button class="notif-close" onclick="closeNotification()">✕</button>
+        <div class="notif-title" id="notifTitle">🔔 یادآوری</div>
+        <div class="notif-body" id="notifBody">تسک شما نزدیک است!</div>
+    </div>
+
+    <!-- ===== MAIN CONTAINER ===== -->
+    <div class="container" id="app">
+        <!-- HEADER -->
+        <div class="header">
+            <h1><i class="fas fa-rocket"></i> پلنر هوشمند</h1>
+            <div class="header-actions">
+                <span class="sync-status" id="syncStatus">
+                    <span class="sync-dot" id="syncDot"></span>
+                    <span id="syncText">محلی</span>
+                </span>
+                <button class="btn btn-dark" onclick="toggleTheme()">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="btn btn-success" onclick="exportCSV()">
+                    <i class="fas fa-file-csv"></i>
+                </button>
+                <button class="btn btn-primary" onclick="exportJSON()">
+                    <i class="fas fa-file-code"></i>
+                </button>
+                <button class="btn btn-warning" onclick="importBackup()">
+                    <i class="fas fa-upload"></i>
+                </button>
+                <button class="btn btn-success native-only" onclick="phoneSyncCalendar()" title="ارسال تسک‌ها به تقویم گوشی">
+                    <i class="fas fa-calendar-check"></i> تقویم گوشی
+                </button>
+                <button class="btn btn-primary" onclick="shareLink()">
+                    <i class="fas fa-share-alt"></i> اشتراک
+                </button>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalTasks">0</div>
+                <div class="stat-label">📋 کل تسک‌ها</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="doneTasks">0</div>
+                <div class="stat-label">✅ انجام‌شده</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="progressTasks">0</div>
+                <div class="stat-label">⚡ در حال انجام</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingTasks">0</div>
+                <div class="stat-label">⏳ باقی‌مانده</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completionRate">0%</div>
+                <div class="stat-label">📈 درصد تکمیل</div>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab active" data-tab="tasks"><i class="fas fa-list"></i> تسک‌ها</button>
+            <button class="tab" data-tab="calendar"><i class="fas fa-calendar-alt"></i> تقویم</button>
+            <button class="tab" data-tab="charts"><i class="fas fa-chart-pie"></i> نمودارها</button>
+        </div>
+
+        <!-- TAB: TASKS -->
+        <div class="tab-content active" id="tab-tasks">
+            <!-- TOOLBAR -->
+            <div class="toolbar">
+                <input type="text" id="searchInput" placeholder="🔍 جستجو..." />
+                <select id="filterStatus">
+                    <option value="all">همه وضعیت‌ها</option>
+                    <option value="todo">📋 To Do</option>
+                    <option value="progress">⚡ In Progress</option>
+                    <option value="done">✅ Done</option>
+                </select>
+                <select id="filterPriority">
+                    <option value="all">همه اولویت‌ها</option>
+                    <option value="high">🔴 بالا</option>
+                    <option value="medium">🟡 متوسط</option>
+                    <option value="low">🔵 کم</option>
+                </select>
+                <button class="btn btn-primary" onclick="showAddTaskModal()">
+                    <i class="fas fa-plus"></i> افزودن
+                </button>
+                <button class="btn btn-danger" onclick="batchDelete()">
+                    <i class="fas fa-trash-alt"></i> حذف
+                </button>
+                <button class="btn btn-success" onclick="batchStatus('done')">
+                    <i class="fas fa-check-double"></i> تکمیل
+                </button>
+                <button class="btn btn-warning" onclick="addSampleData()">
+                    <i class="fas fa-database"></i> نمونه
+                </button>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-wrapper">
+                <table id="taskTable">
+                    <thead>
+                        <tr>
+                            <th style="width:40px">
+                                <input type="checkbox" class="checkbox-custom" id="selectAll" onchange="toggleAll()" />
+                            </th>
+                            <th onclick="sortTable('title')">عنوان <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable('desc')">توضیحات <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable('priority')">اولویت <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable('date')">تاریخ <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable('status')">وضعیت <i class="fas fa-sort"></i></th>
+                            <th style="width:100px">عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- PAGINATION -->
+            <div class="pagination">
+                <div class="pagination-info" id="paginationInfo">نمایش ۰ تا ۰ از ۰</div>
+                <div class="pagination-buttons" id="paginationButtons"></div>
+                <select id="pageSize" onchange="changePageSize()" style="background:rgba(108,92,231,0.04);border:1px solid rgba(108,92,231,0.08);border-radius:12px;padding:8px 12px;font-family:'Vazirmatn',sans-serif;color:var(--text);">
+                    <option value="5">۵</option>
+                    <option value="10" selected>۱۰</option>
+                    <option value="20">۲۰</option>
+                    <option value="50">۵۰</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- TAB: CALENDAR -->
+        <div class="tab-content" id="tab-calendar">
+            <div class="calendar-nav">
+                <button onclick="changeMonth(-1)"><i class="fas fa-chevron-right"></i></button>
+                <span class="month-year" id="calendarTitle">دی ۱۴۰۴</span>
+                <button onclick="changeMonth(1)"><i class="fas fa-chevron-left"></i></button>
+                <button class="btn btn-primary" onclick="goToday()" style="padding:6px 16px;font-size:13px;">
+                    <i class="fas fa-calendar-day"></i> امروز
+                </button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+            <div style="margin-top:15px;padding:15px;background:rgba(108,92,231,0.03);border-radius:16px;">
+                <strong>📌 افسانه:</strong>
+                <span style="margin-right:15px;">🔵 تسک در این روز</span>
+                <span style="margin-right:15px;color:#6c5ce7;">● امروز</span>
+            </div>
+        </div>
+
+        <!-- TAB: CHARTS -->
+        <div class="tab-content" id="tab-charts">
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>📊 وضعیت تسک‌ها</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3>🎯 اولویت‌بندی</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="priorityChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3>📈 روند پیشرفت</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3>🔥 تسک‌های روزانه</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="dailyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL FOR ADD TASK ===== -->
+    <div id="addModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);z-index:9998;align-items:center;justify-content:center;">
+        <div style="background:var(--bg-card);backdrop-filter:blur(20px);padding:30px;border-radius:24px;max-width:500px;width:90%;border:1px solid var(--border);">
+            <h2 style="margin-bottom:20px;">➕ افزودن تسک جدید</h2>
+            <form id="addTaskForm" onsubmit="addTaskFromForm(event)">
+                <input type="text" id="modalTitle" placeholder="عنوان تسک *" required style="width:100%;padding:12px;border-radius:14px;border:1px solid rgba(108,92,231,0.12);background:rgba(255,255,255,0.5);font-family:'Vazirmatn',sans-serif;margin-bottom:12px;color:var(--text);" />
+                <input type="text" id="modalDesc" placeholder="توضیحات" style="width:100%;padding:12px;border-radius:14px;border:1px solid rgba(108,92,231,0.12);background:rgba(255,255,255,0.5);font-family:'Vazirmatn',sans-serif;margin-bottom:12px;color:var(--text);" />
+                <select id="modalPriority" style="width:100%;padding:12px;border-radius:14px;border:1px solid rgba(108,92,231,0.12);background:rgba(255,255,255,0.5);font-family:'Vazirmatn',sans-serif;margin-bottom:12px;color:var(--text);">
+                    <option value="low">اولویت: کم</option>
+                    <option value="medium" selected>اولویت: متوسط</option>
+                    <option value="high">اولویت: بالا</option>
+                </select>
+                <div class="jp-row" id="jalaliPicker">
+                    <select id="jpYear" aria-label="سال"></select>
+                    <select id="jpMonth" aria-label="ماه"></select>
+                    <select id="jpDay" aria-label="روز"></select>
+                </div>
+                <input type="hidden" id="modalDate" />
+                <select id="modalStatus" style="width:100%;padding:12px;border-radius:14px;border:1px solid rgba(108,92,231,0.12);background:rgba(255,255,255,0.5);font-family:'Vazirmatn',sans-serif;margin-bottom:16px;color:var(--text);">
+                    <option value="todo">📋 To Do</option>
+                    <option value="progress">⚡ In Progress</option>
+                    <option value="done">✅ Done</option>
+                </select>
+                <div style="display:flex;gap:12px;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">افزودن</button>
+                    <button type="button" class="btn btn-dark" onclick="closeModal()" style="flex:1;">لغو</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="fileInput" accept=".json" style="display:none" onchange="restoreBackup(event)" />
+
+    <script>
+        // ============================================================
+        //  STATE
+        // ============================================================
+        const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && window.Native);
+        let tasks = JSON.parse(localStorage.getItem('proPlannerTasks')) || [];
+        let currentPage = 1;
+        let pageSize = 10;
+        let sortField = 'date';
+        let sortOrder = 'asc';
+        let selectedIds = new Set();
+        let calJ = JAL.todayJ();   // ماه/سال شمسیِ نمایش‌داده‌شده در تقویم
+        let outlookEvents = {};       // رویدادهای Outlook به تفکیک تاریخ
+        let outlookLoaded = new Set();
+        let outlookUnavailable = false;
+        let desktopReadyDone = false;
+        let charts = {};
+        let syncEnabled = false;
+        let syncInterval = null;
+        let firebaseInitialized = false;
+        let shareData = {};
+
+        // ============================================================
+        //  FIREBASE CONFIG (Replace with your own)
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // ============================================================
+        //  INIT FIREBASE (Optional - enable if you have config)
+        // ============================================================
+        function initFirebase() {
+            if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+                console.log('⚠️ Firebase not configured. Using local storage only.');
+                return;
+            }
+            try {
+                firebase.initializeApp(firebaseConfig);
+                firebaseInitialized = true;
+                syncEnabled = true;
+                updateSyncStatus('connected', 'ابر');
+                startSync();
+                showToast('🌐 همگام‌سازی ابری فعال شد!');
+            } catch (e) {
+                console.warn('Firebase init error:', e);
+                syncEnabled = false;
+                updateSyncStatus('error', 'خطا');
+            }
+        }
+
+        function startSync() {
+            if (!firebaseInitialized) return;
+            // Listen for changes from Firebase
+            const db = firebase.database();
+            const tasksRef = db.ref('tasks');
+            tasksRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    // Merge remote data (avoid overwriting local edits)
+                    const remoteTasks = Object.values(data);
+                    if (remoteTasks.length > 0) {
+                        // Use remote if it has more tasks or local is empty
+                        if (tasks.length === 0 || remoteTasks.length > tasks.length) {
+                            tasks = remoteTasks;
+                            selectedIds.clear();
+                            renderAll();
+                            showToast('🔄 داده‌ها از ابر همگام شدند!');
+                        }
+                    }
+                }
+            });
+
+            // Push local changes every 10 seconds
+            syncInterval = setInterval(() => {
+                if (tasks.length > 0) {
+                    const db = firebase.database();
+                    const updates = {};
+                    tasks.forEach((t, i) => {
+                        updates[`tasks/${t.id}`] = t;
+                    });
+                    db.ref().update(updates).then(() => {
+                        updateSyncStatus('connected', 'ابر');
+                    }).catch(() => {
+                        updateSyncStatus('error', 'خطا');
+                    });
+                }
+            }, 10000);
+        }
+
+        function updateSyncStatus(status, label) {
+            const dot = document.getElementById('syncDot');
+            const text = document.getElementById('syncText');
+            dot.className = 'sync-dot';
+            if (status === 'connected') {
+                dot.style.background = '#00b894';
+            } else if (status === 'syncing') {
+                dot.classList.add('syncing');
+            } else if (status === 'error') {
+                dot.style.background = '#ff6b6b';
+            }
+            text.textContent = label || 'محلی';
+        }
+
+        // ============================================================
+        //  PWA - Service Worker Registration
+        // ============================================================
+        if ('serviceWorker' in navigator && !NATIVE) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log('✅ SW registered'))
+                .catch(() => console.log('⚠️ SW registration failed'));
+        }
+
+        // ============================================================
+        //  NOTIFICATIONS
+        // ============================================================
+        function checkDueDates() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const dueTasks = tasks.filter(t => {
+                if (!t.date || t.status === 'done') return false;
+                const taskDate = localDate(t.date);
+                taskDate.setHours(0, 0, 0, 0);
+                const diff = (taskDate - today) / (1000 * 60 * 60 * 24);
+                return diff >= 0 && diff <= 2; // 0-2 days
+            });
+
+            if (dueTasks.length > 0) {
+                const task = dueTasks[0];
+                const diff = Math.ceil((localDate(task.date) - today) / (1000 * 60 * 60 * 24));
+                let msg = `"${task.title}" در ${diff === 0 ? 'امروز' : diff + ' روز بعد'} سررسید می‌شود!`;
+                showNotification(`🔔 ${dueTasks.length} تسک نزدیک است`, msg);
+
+                // Browser notification
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('📅 یادآوری تسک', {
+                        body: msg,
+                        icon: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple@14.0.0/img/apple/64/1f4c5.png'
+                    });
+                }
+            }
+        }
+
+        function showNotification(title, body) {
+            const banner = document.getElementById('notificationBanner');
+            document.getElementById('notifTitle').textContent = title;
+            document.getElementById('notifBody').textContent = body;
+            banner.classList.add('show');
+            setTimeout(closeNotification, 8000);
+        }
+
+        function closeNotification() {
+            document.getElementById('notificationBanner').classList.remove('show');
+        }
+
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        // ============================================================
+        //  SHARE LINK
+        // ============================================================
+        function shareLink() {
+            if (NATIVE) {
+                if (tasks.length === 0) { showToast('⚠️ هیچ تسکی برای اشتراک وجود ندارد!'); return; }
+                downloadFile(JSON.stringify(tasks, null, 2), 'planner-backup.json', 'application/json');
+                return;
+            }
+            if (tasks.length === 0) {
+                showToast('⚠️ هیچ داده‌ای برای اشتراک‌گذاری وجود ندارد!');
+                return;
+            }
+            const data = encodeURIComponent(JSON.stringify(tasks));
+            const url = window.location.origin + window.location.pathname + '?data=' + data;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'پلنر من',
+                    text: 'تسک‌های من را ببینید!',
+                    url: url
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('✅ لینک در کلیپ‌بورد کپی شد!');
+                }).catch(() => {
+                    prompt('لینک را کپی کنید:', url);
+                });
+            }
+        }
+
+        // Load shared data from URL
+        function loadSharedData() {
+            const params = new URLSearchParams(window.location.search);
+            const data = params.get('data');
+            if (data) {
+                try {
+                    const sharedTasks = JSON.parse(decodeURIComponent(data));
+                    if (Array.isArray(sharedTasks) && sharedTasks.length > 0) {
+                        if (confirm('📥 داده‌های اشتراک‌گذاری‌شده پیدا شد. جایگزین شود؟')) {
+                            tasks = sharedTasks;
+                            selectedIds.clear();
+                            renderAll();
+                            showToast('📥 داده‌های اشتراک‌گذاری‌شده بارگذاری شدند!');
+                            // Remove from URL
+                            window.history.replaceState({}, document.title, window.location.pathname);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Invalid shared data');
+                }
+            }
+        }
+
+        // ============================================================
+        //  RENDER ALL
+        // ============================================================
+        function renderAll() {
+            renderTable();
+            renderCalendar();
+            renderCharts();
+            updateStats();
+            localStorage.setItem('proPlannerTasks', JSON.stringify(tasks));
+            scheduleRemindersSoon();
+        }
+
+        function renderTable() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
+            const priorityFilter = document.getElementById('filterPriority').value;
+
+            let filtered = tasks.filter(t => {
+                const matchSearch = t.title.toLowerCase().includes(search) ||
+                    t.desc.toLowerCase().includes(search);
+                const matchStatus = statusFilter === 'all' || t.status === statusFilter;
+                const matchPriority = priorityFilter === 'all' || t.priority === priorityFilter;
+                return matchSearch && matchStatus && matchPriority;
+            });
+
+            filtered.sort((a, b) => {
+                let valA = a[sortField] || '';
+                let valB = b[sortField] || '';
+                if (sortField === 'date') {
+                    valA = new Date(valA) || 0;
+                    valB = new Date(valB) || 0;
+                }
+                if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+                if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            const total = filtered.length;
+            const totalPages = Math.ceil(total / pageSize) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            const start = (currentPage - 1) * pageSize;
+            const end = Math.min(start + pageSize, total);
+            const pageData = filtered.slice(start, end);
+
+            const tbody = document.getElementById('tableBody');
+            if (pageData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center;padding:40px;opacity:0.3;">
+                            <i class="fas fa-inbox" style="font-size:32px;display:block;margin-bottom:12px;"></i>
+                            هیچ تسکی یافت نشد!
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = pageData.map(t => {
+                    const checked = selectedIds.has(t.id) ? 'checked' : '';
+                    return `
+                        <tr class="${checked ? 'selected' : ''}">
+                            <td>
+                                <input type="checkbox" class="checkbox-custom row-checkbox" 
+                                       data-id="${t.id}" ${checked} onchange="toggleRow('${t.id}')" />
+                            </td>
+                            <td><strong>${t.title}</strong></td>
+                            <td>${t.desc || '—'}</td>
+                            <td><span class="badge badge-${t.priority}">${t.priority}</span></td>
+                            <td>${fmtJ(t.date)}</td>
+                            <td><span class="badge badge-${t.status}">${t.status}</span></td>
+                            <td>
+                                <button class="btn btn-danger" style="padding:4px 12px;font-size:12px;" onclick="deleteTask('${t.id}')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                                <button class="btn btn-primary" style="padding:4px 12px;font-size:12px;" onclick="duplicateTask('${t.id}')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button class="btn btn-success" style="padding:4px 12px;font-size:12px;" onclick="changeStatus('${t.id}','done')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            document.getElementById('paginationInfo').textContent =
+                `نمایش ${total === 0 ? 0 : start + 1} تا ${end} از ${total}`;
+
+            const pDiv = document.getElementById('paginationButtons');
+            let btns = `
+                <button onclick="goPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+            for (let i = 1; i <= totalPages; i++) {
+                btns += `<button onclick="goPage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+            }
+            btns += `
+                <button onclick="goPage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            `;
+            pDiv.innerHTML = btns;
+        }
+
+        function updateStats() {
+            const total = tasks.length;
+            const done = tasks.filter(t => t.status === 'done').length;
+            const progress = tasks.filter(t => t.status === 'progress').length;
+            const pending = total - done;
+            const rate = total === 0 ? 0 : Math.round((done / total) * 100);
+
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('doneTasks').textContent = done;
+            document.getElementById('progressTasks').textContent = progress;
+            document.getElementById('pendingTasks').textContent = pending;
+            document.getElementById('completionRate').textContent = rate + '%';
+
+            // Check for due dates
+            checkDueDates();
+        }
+
+        // ============================================================
+        //  CALENDAR
+        // ============================================================
+        function renderCalendar() {
+            const { jy, jm } = calJ;
+            document.getElementById('calendarTitle').textContent = `${JAL.MONTHS[jm - 1]} ${toFa(jy)}`;
+
+            const len = JAL.monthLength(jy, jm);
+            const g1 = JAL.toGregorian(jy, jm, 1);
+            // هفته از شنبه شروع می‌شود: شنبه=۰ ... جمعه=۶
+            const firstCol = (new Date(g1.gy, g1.gm - 1, g1.gd).getDay() + 1) % 7;
+            const todayISO = isoDate(new Date());
+
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'].forEach(day => {
+                const div = document.createElement('div');
+                div.className = 'calendar-header';
+                div.textContent = day;
+                grid.appendChild(div);
+            });
+
+            for (let i = 0; i < firstCol; i++) {
+                const div = document.createElement('div');
+                div.className = 'calendar-day';
+                div.style.opacity = '0.2';
+                div.style.minHeight = '60px';
+                grid.appendChild(div);
+            }
+
+            for (let d = 1; d <= len; d++) {
+                const div = document.createElement('div');
+                div.className = 'calendar-day';
+                if ((firstCol + d - 1) % 7 === 6) div.classList.add('friday');
+
+                const dateStr = jToISO(jy, jm, d);
+                if (dateStr === todayISO) div.classList.add('today');
+
+                const dayTasks = tasks.filter(t => t.date === dateStr && t.status !== 'done');
+                const evts = outlookEvents[dateStr] || [];
+
+                div.innerHTML = `
+                    <span class="day-number">${toFa(d)}</span>
+                    ${dayTasks.length > 0 ?
+                        `<span class="day-tasks has-tasks">${toFa(dayTasks.length)} تسک</span>` :
+                        `<span class="day-tasks">—</span>`}
+                    ${evts.length > 0 ? `<span class="outlook-evt">📅 ${toFa(evts.length)} رویداد</span>` : ''}
+                `;
+
+                div.onclick = () => {
+                    const tasksOnDay = tasks.filter(t => t.date === dateStr);
+                    const lines = [];
+                    tasksOnDay.forEach(t => lines.push(`• ${t.title} (${t.status})`));
+                    evts.forEach(e => lines.push(`📅 ${e.allDay ? 'تمام‌روز' : toFa(e.time)} — ${e.title}`));
+                    if (lines.length > 0) {
+                        alert(`📋 ${fmtJ(dateStr, true)}:\n${lines.join('\n')}`);
+                    } else {
+                        showToast('📭 هیچ تسک یا رویدادی در این روز نیست');
+                    }
+                };
+
+                grid.appendChild(div);
+            }
+
+            loadPhoneEvents();
+        }
+
+        function changeMonth(delta) {
+            let m = calJ.jm + delta, y = calJ.jy;
+            while (m > 12) { m -= 12; y++; }
+            while (m < 1) { m += 12; y--; }
+            calJ = { jy: y, jm: m };
+            renderCalendar();
+        }
+
+        function goToday() {
+            calJ = JAL.todayJ();
+            renderCalendar();
+        }
+
+        // ============================================================
+        //  انتخاب تاریخ شمسی (مودال افزودن تسک)
+        // ============================================================
+        function initJalaliPicker() {
+            const y = document.getElementById('jpYear');
+            const m = document.getElementById('jpMonth');
+            const d = document.getElementById('jpDay');
+            const cur = JAL.todayJ().jy;
+            y.innerHTML = '';
+            for (let i = cur - 2; i <= cur + 8; i++) y.innerHTML += `<option value="${i}">${toFa(i)}</option>`;
+            m.innerHTML = JAL.MONTHS.map((n, i) => `<option value="${i + 1}">${n}</option>`).join('');
+            fillPickerDays(1);
+            y.addEventListener('change', () => { fillPickerDays(); syncPicker(); });
+            m.addEventListener('change', () => { fillPickerDays(); syncPicker(); });
+            d.addEventListener('change', syncPicker);
+        }
+
+        function fillPickerDays(keepDay) {
+            const y = +document.getElementById('jpYear').value;
+            const m = +document.getElementById('jpMonth').value;
+            const d = document.getElementById('jpDay');
+            const len = JAL.monthLength(y, m);
+            const sel = Math.min(keepDay || +d.value || 1, len);
+            d.innerHTML = '';
+            for (let i = 1; i <= len; i++) d.innerHTML += `<option value="${i}">${toFa(i)}</option>`;
+            d.value = sel;
+        }
+
+        function syncPicker() {
+            document.getElementById('modalDate').value = jToISO(
+                +document.getElementById('jpYear').value,
+                +document.getElementById('jpMonth').value,
+                +document.getElementById('jpDay').value);
+        }
+
+        function setPickerFromISO(iso) {
+            const p = parseISO(iso);
+            if (!p) return;
+            const j = JAL.toJalali(p.y, p.m, p.d);
+            const y = document.getElementById('jpYear');
+            if (![...y.options].some(o => +o.value === j.jy)) y.innerHTML += `<option value="${j.jy}">${toFa(j.jy)}</option>`;
+            y.value = j.jy;
+            document.getElementById('jpMonth').value = j.jm;
+            fillPickerDays(j.jd);
+            syncPicker();
+        }
+
+        // ============================================================
+        //  ادغام با اندروید (اعلان‌ها، تقویم گوشی، اشتراک فایل، دکمه‌ی برگشت)
+        // ============================================================
+        let reminderTimer = null;
+        function scheduleRemindersSoon() {
+            if (!NATIVE) return;
+            clearTimeout(reminderTimer);
+            reminderTimer = setTimeout(() => { Native.scheduleReminders(tasks).catch(() => {}); }, 1500);
+        }
+
+        function handleBack() {
+            const modal = document.getElementById('addModal');
+            if (modal && modal.style.display && modal.style.display !== 'none') { closeModal(); return; }
+            const active = document.querySelector('.tab.active');
+            if (active && active.dataset.tab !== 'tasks') {
+                const first = document.querySelector('.tab[data-tab="tasks"]');
+                if (first) { first.click(); return; }
+            }
+            Native.exitApp();
+        }
+
+        async function onNativeReady() {
+            if (desktopReadyDone || !NATIVE) return;
+            desktopReadyDone = true;
+            document.body.classList.add('native');
+            try {
+                await Native.init({ onBack: handleBack });
+                Native.setDarkUi(document.body.classList.contains('dark'));
+                await Native.scheduleReminders(tasks);
+            } catch (e) { console.warn(e); }
+            loadPhoneEvents();
+        }
+
+        async function loadPhoneEvents() {
+            if (!NATIVE || outlookUnavailable) return;
+            const first = jToISO(calJ.jy, calJ.jm, 1);
+            const last = jToISO(calJ.jy, calJ.jm, JAL.monthLength(calJ.jy, calJ.jm));
+            const key = first + '|' + last;
+            if (outlookLoaded.has(key)) return;
+            outlookLoaded.add(key);
+            try {
+                const r = await Native.listEvents(first, last);
+                if (r && r.ok) {
+                    r.events.forEach(e => {
+                        const arr = (outlookEvents[e.date] = outlookEvents[e.date] || []);
+                        if (!arr.some(x => x.title === e.title && x.time === e.time)) arr.push(e);
+                    });
+                    if (r.events.length) renderCalendar();
+                } else {
+                    outlookLoaded.delete(key);   // مجوز هنوز داده نشده؛ بعد از همگام‌سازی دوباره تلاش می‌شود
+                }
+            } catch (e) { outlookLoaded.delete(key); }
+        }
+
+        async function phoneSyncCalendar() {
+            if (!NATIVE) { showToast('⚠️ این قابلیت فقط در برنامه‌ی اندروید کار می‌کند'); return; }
+            showToast('⏳ در حال همگام‌سازی با تقویم گوشی...');
+            const r = await Native.syncCalendar(tasks);
+            if (r.ok) {
+                showToast(`✅ ${toFa(r.created)} جدید، ${toFa(r.updated)} به‌روز، ${toFa(r.deleted)} حذف`);
+                outlookEvents = {}; outlookLoaded.clear();
+                renderCalendar();
+            } else {
+                alert('❌ ' + r.error);
+            }
+        }
+
+        // ============================================================
+        //  CHARTS
+        // ============================================================
+        function renderCharts() {
+            const statusCounts = {
+                todo: tasks.filter(t => t.status === 'todo').length,
+                progress: tasks.filter(t => t.status === 'progress').length,
+                done: tasks.filter(t => t.status === 'done').length
+            };
+
+            const priorityCounts = {
+                high: tasks.filter(t => t.priority === 'high').length,
+                medium: tasks.filter(t => t.priority === 'medium').length,
+                low: tasks.filter(t => t.priority === 'low').length
+            };
+
+            // Status Chart (Doughnut)
+            const ctx1 = document.getElementById('statusChart').getContext('2d');
+            if (charts.status) charts.status.destroy();
+            charts.status = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['To Do', 'In Progress', 'Done'],
+                    datasets: [{
+                        data: [statusCounts.todo, statusCounts.progress, statusCounts.done],
+                        backgroundColor: ['#a29bfe', '#fdcb6e', '#00b894'],
+                        borderWidth: 2,
+                        borderColor: 'transparent'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { family: 'Vazirmatn' } }
+                        }
+                    }
+                }
+            });
+
+            // Priority Chart (Bar)
+            const ctx2 = document.getElementById('priorityChart').getContext('2d');
+            if (charts.priority) charts.priority.destroy();
+            charts.priority = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['بالا', 'متوسط', 'کم'],
+                    datasets: [{
+                        label: 'تعداد تسک‌ها',
+                        data: [priorityCounts.high, priorityCounts.medium, priorityCounts.low],
+                        backgroundColor: ['#ff6b6b', '#feca57', '#48dbfb'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+
+            // Trend Chart (Line)
+            const ctx3 = document.getElementById('trendChart').getContext('2d');
+            if (charts.trend) charts.trend.destroy();
+            const last7Days = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                last7Days.push(isoDate(d));
+            }
+            const trendData = last7Days.map(date => {
+                return tasks.filter(t => t.date === date && t.status === 'done').length;
+            });
+
+            charts.trend = new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: last7Days.map(d => fmtJShort(d)),
+                    datasets: [{
+                        label: 'تسک‌های انجام‌شده',
+                        data: trendData,
+                        borderColor: '#6c5ce7',
+                        backgroundColor: 'rgba(108,92,231,0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#6c5ce7'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+
+            // Daily Chart (Horizontal Bar)
+            const ctx4 = document.getElementById('dailyChart').getContext('2d');
+            if (charts.daily) charts.daily.destroy();
+            const statusColors = { todo: '#a29bfe', progress: '#fdcb6e', done: '#00b894' };
+            const statusLabels = ['To Do', 'In Progress', 'Done'];
+
+            charts.daily = new Chart(ctx4, {
+                type: 'bar',
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        label: 'تعداد تسک‌ها',
+                        data: [statusCounts.todo, statusCounts.progress, statusCounts.done],
+                        backgroundColor: ['#a29bfe', '#fdcb6e', '#00b894'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        //  CRUD OPERATIONS
+        // ============================================================
+        function addTaskFromForm(e) {
+            e.preventDefault();
+            const title = document.getElementById('modalTitle').value.trim();
+            const desc = document.getElementById('modalDesc').value.trim();
+            const priority = document.getElementById('modalPriority').value;
+            const date = document.getElementById('modalDate').value;
+            const status = document.getElementById('modalStatus').value;
+
+            if (!title) {
+                showToast('⚠️ عنوان تسک را وارد کنید!');
+                return;
+            }
+
+            const task = {
+                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+                title,
+                desc,
+                priority,
+                date: date || isoDate(new Date()),
+                status,
+                createdAt: new Date().toISOString()
+            };
+            tasks.push(task);
+            closeModal();
+            renderAll();
+            showToast('✅ تسک اضافه شد!');
+        }
+
+        function showAddTaskModal() {
+            document.getElementById('addModal').style.display = 'flex';
+            setPickerFromISO(isoDate(new Date()));
+            document.getElementById('modalTitle').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('addModal').style.display = 'none';
+            document.getElementById('addTaskForm').reset();
+        }
+
+        function deleteTask(id) {
+            if (confirm('آیا مطمئن هستید؟')) {
+                tasks = tasks.filter(t => t.id !== id);
+                selectedIds.delete(id);
+                renderAll();
+                showToast('🗑️ تسک حذف شد');
+            }
+        }
+
+        function duplicateTask(id) {
+            const original = tasks.find(t => t.id === id);
+            if (!original) return;
+            const copy = {
+                ...original,
+                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+                title: original.title + ' (کپی)',
+                status: 'todo'
+            };
+            tasks.push(copy);
+            renderAll();
+            showToast('📋 تسک کپی شد!');
+        }
+
+        function changeStatus(id, newStatus) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.status = newStatus;
+                renderAll();
+                showToast(`✅ وضعیت تغییر کرد: ${newStatus}`);
+            }
+        }
+
+        function toggleRow(id) {
+            if (selectedIds.has(id)) selectedIds.delete(id);
+            else selectedIds.add(id);
+            renderTable();
+        }
+
+        function toggleAll() {
+            const checked = document.getElementById('selectAll').checked;
+            const visible = document.querySelectorAll('#tableBody tr');
+            visible.forEach(tr => {
+                const checkbox = tr.querySelector('.row-checkbox');
+                if (checkbox) {
+                    const id = checkbox.dataset.id;
+                    if (checked) selectedIds.add(id);
+                    else selectedIds.delete(id);
+                }
+            });
+            renderTable();
+        }
+
+        function batchDelete() {
+            if (selectedIds.size === 0) {
+                showToast('⚠️ هیچ تسکی انتخاب نشده!');
+                return;
+            }
+            if (confirm(`آیا ${selectedIds.size} تسک انتخاب‌شده حذف شوند؟`)) {
+                tasks = tasks.filter(t => !selectedIds.has(t.id));
+                selectedIds.clear();
+                renderAll();
+                showToast(`🗑️ ${selectedIds.size} تسک حذف شد`);
+            }
+        }
+
+        function batchStatus(status) {
+            if (selectedIds.size === 0) {
+                showToast('⚠️ هیچ تسکی انتخاب نشده!');
+                return;
+            }
+            tasks.forEach(t => {
+                if (selectedIds.has(t.id)) t.status = status;
+            });
+            selectedIds.clear();
+            renderAll();
+            showToast(`✅ وضعیت تسک‌ها تغییر کرد`);
+        }
+
+        // ============================================================
+        //  SORT & PAGINATION
+        // ============================================================
+        function sortTable(field) {
+            if (sortField === field) {
+                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortField = field;
+                sortOrder = 'asc';
+            }
+            renderTable();
+        }
+
+        function goPage(page) {
+            const total = tasks.length;
+            const totalPages = Math.ceil(total / pageSize) || 1;
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+        }
+
+        function changePageSize() {
+            pageSize = parseInt(document.getElementById('pageSize').value);
+            currentPage = 1;
+            renderTable();
+        }
+
+        // ============================================================
+        //  EXPORT / IMPORT
+        // ============================================================
+        function exportCSV() {
+            if (tasks.length === 0) { showToast('⚠️ هیچ داده‌ای وجود ندارد!'); return; }
+            const headers = ['شناسه', 'عنوان', 'توضیحات', 'اولویت', 'تاریخ', 'وضعیت'];
+            let csv = headers.join(',') + '\n';
+            tasks.forEach(t => {
+                csv += [t.id, t.title, t.desc, t.priority, t.date, t.status].map(c => `"${c}"`).join(',') + '\n';
+            });
+            downloadFile(csv, 'tasks.csv', 'text/csv');
+            showToast(NATIVE ? '📤 فایل CSV آماده‌ی ذخیره/ارسال است' : '📥 CSV دانلود شد!');
+        }
+
+        function exportJSON() {
+            const json = JSON.stringify(tasks, null, 2);
+            downloadFile(json, 'tasks.json', 'application/json');
+            showToast(NATIVE ? '📤 فایل JSON آماده‌ی ذخیره/ارسال است' : '📥 JSON دانلود شد!');
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            if (NATIVE) {
+                Native.exportFile(content, filename, mimeType).then(r => { if (!r.ok) alert('❌ ' + r.error); });
+                return;
+            }
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importBackup() {
+            document.getElementById('fileInput').click();
+        }
+
+        function restoreBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data)) {
+                        tasks = data;
+                        selectedIds.clear();
+                        renderAll();
+                        showToast(`✅ ${tasks.length} تسک بازیابی شد!`);
+                    } else {
+                        showToast('❌ فایل نامعتبر!');
+                    }
+                } catch (err) {
+                    showToast('❌ خطا در خواندن فایل!');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // ============================================================
+        //  SAMPLE DATA
+        // ============================================================
+        function addSampleData() {
+            const samples = [
+                { title: 'طراحی UI/UX جدید', desc: 'داشبورد مدیریتی', priority: 'high', status: 'progress' },
+                { title: 'پیاده‌سازی بک‌اند', desc: 'API با Node.js', priority: 'high', status: 'todo' },
+                { title: 'تست اپلیکیشن', desc: 'تست واحد و یکپارچگی', priority: 'medium', status: 'done' },
+                { title: 'مستندسازی', desc: 'نوشتن مستندات فنی', priority: 'low', status: 'todo' },
+                { title: 'بهینه‌سازی سرعت', desc: 'کاهش زمان لود', priority: 'medium', status: 'progress' },
+                { title: 'بررسی امنیت', desc: 'اسکن آسیب‌پذیری', priority: 'high', status: 'todo' },
+                { title: 'آموزش تیم', desc: 'کارگاه تخصصی', priority: 'low', status: 'done' },
+            ];
+            const today = new Date();
+            samples.forEach((s, i) => {
+                const d = new Date(today);
+                d.setDate(d.getDate() + i);
+                const task = {
+                    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + i,
+                    title: s.title,
+                    desc: s.desc,
+                    priority: s.priority,
+                    date: isoDate(d),
+                    status: s.status,
+                    createdAt: new Date().toISOString()
+                };
+                tasks.push(task);
+            });
+            renderAll();
+            showToast('📊 نمونه داده‌ها اضافه شدند!');
+        }
+
+        // ============================================================
+        //  THEME
+        // ============================================================
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const icon = document.querySelector('.btn-dark i');
+            if (document.body.classList.contains('dark')) {
+                icon.className = 'fas fa-sun';
+            } else {
+                icon.className = 'fas fa-moon';
+            }
+            localStorage.setItem('proTheme', document.body.classList.contains('dark') ? 'dark' : 'light');
+            if (NATIVE) Native.setDarkUi(document.body.classList.contains('dark'));
+        }
+
+        // ============================================================
+        //  TOAST
+        // ============================================================
+        function showToast(message) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.4s';
+                setTimeout(() => toast.remove(), 400);
+            }, 2500);
+        }
+
+        // ============================================================
+        //  TABS
+        // ============================================================
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+
+                // Re-render charts when switching to charts tab
+                if (this.dataset.tab === 'charts') {
+                    setTimeout(renderCharts, 100);
+                }
+                if (this.dataset.tab === 'calendar') {
+                    renderCalendar();
+                }
+            });
+        });
+
+        // ============================================================
+        //  KEYBOARD SHORTCUTS
+        // ============================================================
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+                e.preventDefault();
+                showAddTaskModal();
+            }
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                e.preventDefault();
+                batchDelete();
+            }
+            if (e.key === 'Escape') {
+                closeModal();
+                closeNotification();
+            }
+        });
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        // Restore theme
+        if (localStorage.getItem('proTheme') === 'dark') {
+            document.body.classList.add('dark');
+            document.querySelector('.btn-dark i').className = 'fas fa-sun';
+        }
+
+        // Load shared data
+        initJalaliPicker();
+        loadSharedData();
+
+        // Init Firebase (optional)
+        initFirebase();
+
+        // Render
+        renderAll();
+
+        // Listen for filter changes
+        document.getElementById('searchInput').addEventListener('input', renderTable);
+        document.getElementById('filterStatus').addEventListener('change', renderTable);
+        document.getElementById('filterPriority').addEventListener('change', renderTable);
+
+        showToast('🚀 پلنر هوشمند آماده‌ست!');
+        onNativeReady();
+
+        // Close modal on outside click
+        document.getElementById('addModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        console.log('✨ پلنر فوق‌پیشرفته با همه قابلیت‌ها!');
+        console.log('📌 میانبرهای کیبورد:');
+        console.log('  Ctrl+Shift+A = افزودن تسک');
+        console.log('  Ctrl+Shift+D = حذف انتخاب‌شده‌ها');
+        console.log('  ESC = بستن پنجره‌ها');
+    </script>
+
+</body>
+</html>
